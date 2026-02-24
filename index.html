@@ -1,25 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Heavy Back Trap</title>
+  <title>Advanced Back Trap Test</title>
 </head>
 <body>
 
-<h2>Back Button Trap Active</h2>
-<p>Try pressing browser back.</p>
+<h2>Advanced Trap Active</h2>
+<p>Press browser back and observe.</p>
 
 <script>
-  function trap() {
-    history.pushState({}, "", location.href);
+  let count = 0;
+
+  function pushNewState() {
+    count++;
+    history.pushState({page: count}, "", "?step=" + count);
   }
 
-  // Push multiple entries
-  for (let i = 0; i < 20; i++) {
-    trap();
-  }
+  // Delay flood
+  setTimeout(() => {
+    for (let i = 0; i < 15; i++) {
+      pushNewState();
+    }
+  }, 500);
 
   window.addEventListener("popstate", function () {
-    trap();
+    pushNewState();
   });
 </script>
 
