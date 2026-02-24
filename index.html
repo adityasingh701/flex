@@ -1,54 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>UX Navigation by Destin</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      text-align: center;
-    }
-    .screen {
-      display: none;
-      height: 100vh;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-    }
-    .active {
-      display: flex;
-    }
-    button {
-      padding: 12px 25px;
-      font-size: 16px;
-      cursor: pointer;
-      margin-top: 20px;
-    }
-  </style>
+  <title>Back Button Trap Test</title>
 </head>
 <body>
 
-<div id="screen1" class="screen active">
-  <h1>DC</h1>
-</div>
+<h2>Test Page</h2>
+<button onclick="goBack()">Special Back Button</button>
 
 <script>
-  let currentScreen = "screen1";
-
-  function goTo(screenId) {
-    document.getElementById(currentScreen).classList.remove("active");
-    document.getElementById(screenId).classList.add("active");
-    currentScreen = screenId;
-
-    history.pushState({ page: screenId }, "", "");
-  }
-
-  // Trap browser back
+  // Push fake history state
   history.pushState(null, null, location.href);
 
   window.onpopstate = function () {
     history.pushState(null, null, location.href);
+    alert("Please use the special back button!");
   };
+
+  function goBack() {
+    window.location.href = "https://adityasingh701.github.io/flex/";
+  }
 </script>
 
 </body>
