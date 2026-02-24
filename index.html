@@ -1,25 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Back Button Trap Test</title>
+  <title>Heavy Back Trap</title>
 </head>
 <body>
 
-<h2>Test Page</h2>
-<button onclick="goBack()">Special Back Button</button>
+<h2>Destin Creates Special</h2>
+<p>Ye to bas Suruaat hai...</p>
 
 <script>
-  // Push fake history state
-  history.pushState(null, null, location.href);
+  // Push multiple fake states
+  for (let i = 0; i < 10; i++) {
+    history.pushState({page: i}, "", "");
+  }
 
   window.onpopstate = function () {
     history.pushState(null, null, location.href);
-    alert("Please use the special back button!");
   };
-
-  function goBack() {
-    window.location.href = "https://adityasingh701.github.io/flex/";
-  }
 </script>
 
 </body>
