@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>UX Navigation by Destin</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    .screen {
+      display: none;
+      height: 100vh;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    .active {
+      display: flex;
+    }
+    button {
+      padding: 12px 25px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="screen1" class="screen active">
+  <h1>DC</h1>
+  <button onclick="goTo('screen2')">Next</button>
+</div>
+
+<div id="screen2" class="screen">
+  <h1>DC</h1>
+  <button onclick="goTo('screen3')">Next</button>
+</div>
+
+<div id="screen3" class="screen">
+  <h1>DC</h1>
+  <p></p>
+</div>
+
+<script>
+  let currentScreen = "screen1";
+
+  function goTo(screenId) {
+    document.getElementById(currentScreen).classList.remove("active");
+    document.getElementById(screenId).classList.add("active");
+    currentScreen = screenId;
+
+    history.pushState({ page: screenId }, "", "");
+  }
+
+  // Trap browser back
+  history.pushState(null, null, location.href);
+
+  window.onpopstate = function () {
+    history.pushState(null, null, location.href);
+  };
+</script>
+
+</body>
+</html>
