@@ -1,31 +1,264 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Advanced Back Trap Test</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interactive Experience</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial, sans-serif;
+}
+
+body{
+background:black;
+color:white;
+overflow:hidden;
+height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+flex-direction:column;
+}
+
+/* Start Button */
+#startBtn{
+padding:15px 30px;
+font-size:20px;
+background:red;
+border:none;
+color:white;
+cursor:pointer;
+z-index:10;
+}
+
+/* Overlay Base */
+.overlay{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+display:flex;
+align-items:center;
+justify-content:center;
+flex-direction:column;
+opacity:0;
+visibility:hidden;
+transition:0.4s;
+z-index:50;
+}
+
+.overlay.show{
+opacity:1;
+visibility:visible;
+}
+
+.overlay button{
+margin-top:20px;
+padding:12px 25px;
+font-size:18px;
+background:white;
+color:black;
+border:none;
+cursor:pointer;
+}
+
+/* Different overlay styles */
+#overlay1{
+background:rgba(0,0,0,0.95);
+}
+
+#overlay2{
+background:rgba(30,0,0,0.95);
+}
+
+#overlay3{
+background:rgba(0,0,40,0.95);
+}
+  #overlay4{
+background:rgba(0,0,0,0.95);
+  }
+  #overlay5{
+background:rgba(30,0,0,0.95);
+  }
+    #overlay6{
+background:rgba(0,0,40,0.95);
+  }
+    #overlay7{
+background:rgba(0,0,0,0.95);
+  }
+    #overlay8{
+background:rgba(30,0,0,0.95);
+  }
+  
+
+/* Flash effect */
+.flash{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:white;
+opacity:0;
+pointer-events:none;
+z-index:100;
+}
+
+/* Shake animation */
+@keyframes shake {
+0% { transform: translate(2px, 2px) rotate(0deg); }
+25% { transform: translate(-2px, -3px) rotate(-1deg); }
+50% { transform: translate(3px, 2px) rotate(1deg); }
+75% { transform: translate(-3px, 1px) rotate(0deg); }
+100% { transform: translate(2px, -2px) rotate(1deg); }
+}
+
+.shake{
+animation:shake 0.2s infinite;
+}
+
+</style>
 </head>
 <body>
 
-<h2>Advanced Trap Active</h2>
-<p>Press browser back and observe.</p>
+<button id="startBtn" onclick="startExperience()">Start</button>
+
+<div id="overlay1" class="overlay">
+<h1>DestinCreates</h1>
+<button onclick="nextLayer(1)">Next</button>
+</div>
+
+<div id="overlay2" class="overlay">
+<h1>DestinCreates</h1>
+<button onclick="nextLayer(2)">Next</button>
+</div>
+
+  <div id="overlay3" class="overlay">
+<h1>DestinCreates</h1>
+<button onclick="nextLayer(2)">Next</button>
+  </div>
+
+  <div id="overlay4" class="overlay">
+<h1>DestinCreates</h1>
+<button onclick="nextLayer(2)">Next</button>
+  </div>
+
+  <div id="overlay5" class="overlay">
+<h1>DestinCreates</h1>
+<button onclick="nextLayer(2)">Next</button>
+  </div>
+
+  <div id="overlay6" class="overlay">
+<h1>DestinCreates</h1>
+<button onclick="nextLayer(2)">Next</button>
+  </div>
+
+  <div id="overlay7" class="overlay">
+<h1>DestinCreates</h1>
+<button onclick="nextLayer(2)">Next</button>
+  </div>
+
+<div id="overlay8" class="overlay">
+<h1>DestinCreates</h1>
+<button onclick="exitAll()">Exit</button>
+</div>
+
+<div class="flash" id="flash"></div>
+
+<audio id="bgMusic" src="your-song.mp3" loop></audio>
 
 <script>
-  let count = 0;
 
-  function pushNewState() {
-    count++;
-    history.pushState({page: count}, "", "?step=" + count);
-  }
+let currentLayer = 0;
+let audioStarted = false;
 
-  // Delay flood
-  setTimeout(() => {
-    for (let i = 0; i < 15; i++) {
-      pushNewState();
-    }
-  }, 500);
+/* Start */
+function startExperience(){
+document.getElementById("startBtn").style.display="none";
+enterFullscreen();
+activateLayer(1);
+startEffects();
 
-  window.addEventListener("popstate", function () {
-    pushNewState();
-  });
+if(!audioStarted){
+document.getElementById("bgMusic").play();
+audioStarted=true;
+}
+}
+
+/* Activate Layer */
+function activateLayer(layer){
+currentLayer = layer;
+document.getElementById("overlay"+layer).classList.add("show");
+history.pushState({layer:layer},"","#layer"+layer);
+}
+
+/* Next */
+function nextLayer(current){
+document.getElementById("overlay"+current).classList.remove("show");
+activateLayer(current+1);
+}
+
+/* Back Button Handling */
+window.addEventListener("popstate",function(){
+if(currentLayer>0){
+document.getElementById("overlay"+currentLayer).classList.remove("show");
+document.body.classList.add("shake");
+setTimeout(()=>{document.body.classList.remove("shake");},300);
+currentLayer--;
+if(currentLayer===0){
+exitAll();
+}
+}
+});
+
+/* Exit All */
+function exitAll(){
+for(let i=1;i<=8;i++){
+let el=document.getElementById("overlay"+i);
+if(el) el.classList.remove("show");
+}
+currentLayer=0;
+
+let audio=document.getElementById("bgMusic");
+audio.pause();
+audio.currentTime=0;
+audioStarted=false;
+
+if(document.fullscreenElement){
+document.exitFullscreen();
+}
+
+document.getElementById("startBtn").style.display="block";
+}
+
+/* Fullscreen */
+function enterFullscreen(){
+if(document.documentElement.requestFullscreen){
+document.documentElement.requestFullscreen();
+}
+}
+
+/* Flash + Random Color Flicker */
+function startEffects(){
+
+setInterval(()=>{
+let colors=["red","blue","purple","green","yellow","cyan","orange"];
+document.body.style.background=colors[Math.floor(Math.random()*colors.length)];
+},150);
+
+setInterval(()=>{
+let flash=document.getElementById("flash");
+flash.style.opacity="0.8";
+setTimeout(()=>{flash.style.opacity="0";},100);
+},1000);
+
+}
+
 </script>
 
 </body>
