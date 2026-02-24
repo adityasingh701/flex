@@ -5,18 +5,22 @@
 </head>
 <body>
 
-<h2>Destin Creates Special</h2>
-<p>Ye to bas Suruaat hai...</p>
+<h2>Back Button Trap Active</h2>
+<p>Try pressing browser back.</p>
 
 <script>
-  // Push multiple fake states
-  for (let i = 0; i < 10; i++) {
-    history.pushState({page: i}, "", "");
+  function trap() {
+    history.pushState({}, "", location.href);
   }
 
-  window.onpopstate = function () {
-    history.pushState(null, null, location.href);
-  };
+  // Push multiple entries
+  for (let i = 0; i < 20; i++) {
+    trap();
+  }
+
+  window.addEventListener("popstate", function () {
+    trap();
+  });
 </script>
 
 </body>
