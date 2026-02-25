@@ -1,14 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Interactive Experience</title>
-
+<title>EXTREME STACK MODE</title>
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
-
 
 body{
 background:black;
@@ -19,127 +17,167 @@ display:flex;
 align-items:center;
 justify-content:center;
 flex-direction:column;
+transition:0.05s;
 }
 
-
 #startBtn{
-padding:15px 30px;
-font-size:20px;
+padding:20px 40px;
+font-size:22px;
 background:red;
 color:white;
 border:none;
 cursor:pointer;
 }
 
-
 .overlay{
 position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
+top:0;left:0;
+width:100%;height:100%;
 display:flex;
 align-items:center;
 justify-content:center;
-flex-direction:column;
-background:rgba(0,0,0,0.95);
+background:black;
 opacity:0;
 visibility:hidden;
-transition:0.4s;
 }
-
 
 .overlay.show{
 opacity:1;
 visibility:visible;
 }
 
+.flash{
+position:fixed;
+top:0;left:0;
+width:100%;height:100%;
+background:white;
+opacity:0;
+pointer-events:none;
+z-index:999;
+}
 
-.overlay button{
-margin-top:20px;
-padding:12px 25px;
-font-size:18px;
-border:none;
-cursor:pointer;
+.shake{
+animation:shake 0.1s infinite;
+}
+
+@keyframes shake{
+0%{transform:translate(4px,4px);}
+25%{transform:translate(-4px,-5px);}
+50%{transform:translate(5px,4px);}
+75%{transform:translate(-5px,3px);}
+100%{transform:translate(4px,-4px);}
 }
 </style>
 </head>
 <body>
 
+<button id="startBtn" onclick="startExperience()">START</button>
 
-<button id="startBtn" onclick="startExperience()">Start</button>
+<!-- 9 overlays -->
+<div id="overlay1" class="overlay"></div>
+<div id="overlay2" class="overlay"></div>
+<div id="overlay3" class="overlay"></div>
+<div id="overlay4" class="overlay"></div>
+<div id="overlay5" class="overlay"></div>
+<div id="overlay6" class="overlay"></div>
+<div id="overlay7" class="overlay"></div>
+<div id="overlay8" class="overlay"></div>
+<div id="overlay9" class="overlay"><h1>FINAL MODE</h1></div>
 
-
-<!-- 9 Overlays -->
-<div id="overlay1" class="overlay"><h1>Layer 1</h1><button onclick="nextLayer(1)">Next</button></div>
-<div id="overlay2" class="overlay"><h1>Layer 2</h1><button onclick="nextLayer(2)">Next</button></div>
-<div id="overlay3" class="overlay"><h1>Layer 3</h1><button onclick="nextLayer(3)">Next</button></div>
-<div id="overlay4" class="overlay"><h1>Layer 4</h1><button onclick="nextLayer(4)">Next</button></div>
-<div id="overlay5" class="overlay"><h1>Layer 5</h1><button onclick="nextLayer(5)">Next</button></div>
-<div id="overlay6" class="overlay"><h1>Layer 6</h1><button onclick="nextLayer(6)">Next</button></div>
-<div id="overlay7" class="overlay"><h1>Layer 7</h1><button onclick="nextLayer(7)">Next</button></div>
-<div id="overlay8" class="overlay"><h1>Layer 8</h1><button onclick="nextLayer(8)">Next</button></div>
-<div id="overlay9" class="overlay"><h1>Final Layer</h1></div>
-
+<div class="flash" id="flash"></div>
 
 <audio id="bgMusic" src="tft.mp3" loop></audio>
 
-
 <script>
 
+let currentLayer=0;
+let musicStarted=false;
 
-let currentLayer = 0;
-let musicStarted = false;
-const audio = document.getElementById("bgMusic");
-
+let audio=document.getElementById("bgMusic");
+let audioCtx, source, gainNode;
 
 /* START */
 function startExperience(){
 document.getElementById("startBtn").style.display="none";
 enterFullscreen();
-activateLayer(1);
+
+/* Build full history stack 1-9 */
+for(let i=1;i<=9;i++){
+history.pushState({layer:i},"","#layer"+i);
+currentLayer=i;
 }
 
+/* Show only 9 */
+document.getElementById("overlay9").classList.add("show");
 
-/* ACTIVATE LAYER */
-function activateLayer(layer){
-currentLayer = layer;
-document.getElementById("overlay"+layer).classList.add("show");
-history.pushState({layer:layer},"","#layer"+layer);
-
-
-/* MUSIC START ONLY ON LAYER 9 */
-if(layer === 9 && !musicStarted){
-audio.play();
-musicStarted = true;
-}
+startMusic();
+startExtremeEffects();
 }
 
-
-/* NEXT */
-function nextLayer(current){
-document.getElementById("overlay"+current).classList.remove("show");
-activateLayer(current+1);
-}
-
-
-/* BACK BUTTON */
+/* BACK HANDLER */
 window.addEventListener("popstate",function(){
-
 
 if(currentLayer>0){
 document.getElementById("overlay"+currentLayer).classList.remove("show");
 currentLayer--;
 }
 
-
-/* Notice:
-Music will NOT stop even if user comes back to first page.
-*/
-
+/* Volume spike */
+if(musicStarted && gainNode.gain.value<10){
+gainNode.gain.value+=2;
+}
 
 });
 
+/* MUSIC */
+function startMusic(){
+audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+source=audioCtx.createMediaElementSource(audio);
+gainNode=audioCtx.createGain();
+
+gainNode.gain.value=3;
+
+source.connect(gainNode);
+gainNode.connect(audioCtx.destination);
+
+audio.play();
+musicStarted=true;
+}
+
+/* EXTREME EFFECTS */
+function startExtremeEffects(){
+
+document.body.classList.add("shake");
+
+/* Ultra RGB flicker */
+setInterval(()=>{
+let r=Math.random()*255;
+let g=Math.random()*255;
+let b=Math.random()*255;
+document.body.style.background=`rgb(${r},${g},${b})`;
+},40);
+
+/* Flash burst */
+setInterval(()=>{
+let flash=document.getElementById("flash");
+flash.style.opacity="1";
+setTimeout(()=>{flash.style.opacity="0";},40);
+},400);
+
+/* Random invert glitch */
+setInterval(()=>{
+document.body.style.filter="invert(1)";
+setTimeout(()=>{document.body.style.filter="invert(0)";},80);
+},2000);
+
+/* Vibration */
+if(navigator.vibrate){
+setInterval(()=>{
+navigator.vibrate([300,100,300,100,500]);
+},1200);
+}
+
+}
 
 /* FULLSCREEN */
 function enterFullscreen(){
@@ -148,10 +186,6 @@ document.documentElement.requestFullscreen();
 }
 }
 
-
 </script>
-
-
 </body>
-
 </html>
