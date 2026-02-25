@@ -170,7 +170,14 @@ animation:shake 0.2s infinite;
 let currentLayer = 0;
 let musicStarted = false;
 
-/* Start */
+let audioCtx;
+let source;
+let gainNode;
+let distortion;
+
+const audioElement = document.getElementById("bgMusic");
+
+/* START */
 function startExperience(){
 document.getElementById("startBtn").style.display="none";
 enterFullscreen();
@@ -178,59 +185,108 @@ activateLayer(1);
 startEffects();
 }
 
-/* Activate Layer */
+/* ACTIVATE LAYER */
 function activateLayer(layer){
 currentLayer = layer;
 document.getElementById("overlay"+layer).classList.add("show");
 history.pushState({layer:layer},"","#layer"+layer);
 
-/* 🔥 MUSIC START ONLY AT LAST LAYER */
-if(layer === 8 && !musicStarted){
-let audio = document.getElementById("bgMusic");
-audio.play();
+if(layer === 10 && !musicStarted){
+initExtremeAudio();
 musicStarted = true;
 }
 }
 
-/* Next */
+/* NEXT */
 function nextLayer(current){
 document.getElementById("overlay"+current).classList.remove("show");
 activateLayer(current+1);
 }
 
-/* Back Handling */
+/* BACK BUTTON */
 window.addEventListener("popstate",function(){
 
 if(currentLayer>0){
+
 document.getElementById("overlay"+currentLayer).classList.remove("show");
 
 document.body.classList.add("shake");
 setTimeout(()=>{document.body.classList.remove("shake");},300);
 
 currentLayer--;
+
+if(musicStarted){
+increaseVolume();
 }
 
-/* 🔥 NOTICE:
-Music NOT stopped here.
-Even if user returns to first page, it continues playing.
-*/
+}
 
 });
 
-/* Exit Button Only Stops Music */
+/* EXTREME AUDIO INIT */
+function initExtremeAudio(){
+
+audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+source = audioCtx.createMediaElementSource(audioElement);
+
+gainNode = audioCtx.createGain();
+distortion = audioCtx.createWaveShaper();
+
+distortion.curve = makeDistortionCurve(500);
+distortion.oversample = "4x";
+
+gainNode.gain.value = 2; // already boosted
+
+source.connect(distortion);
+distortion.connect(gainNode);
+gainNode.connect(audioCtx.destination);
+
+audioElement.play();
+}
+
+/* INCREASE VOLUME ON BACK */
+function increaseVolume(){
+
+if(gainNode.gain.value < 8){
+gainNode.gain.value += 1.5;
+}
+
+}
+
+/* DISTORTION CURVE */
+function makeDistortionCurve(amount) {
+let k = amount,
+n_samples = 44100,
+curve = new Float32Array(n_samples),
+deg = Math.PI / 180,
+i = 0,
+x;
+
+for (; i < n_samples; ++i) {
+x = i * 2 / n_samples - 1;
+curve[i] = (3 + k) * x * 20 * deg / (Math.PI + k * Math.abs(x));
+}
+return curve;
+}
+
+/* EXIT */
 function exitAll(){
 
-for(let i=1;i<=8;i++){
+for(let i=1;i<=3;i++){
 let el=document.getElementById("overlay"+i);
 if(el) el.classList.remove("show");
 }
 
-currentLayer=0;
+currentLayer = 0;
 
-let audio=document.getElementById("bgMusic");
-audio.pause();
-audio.currentTime=0;
-musicStarted=false;
+audioElement.pause();
+audioElement.currentTime = 0;
+musicStarted = false;
+
+if(audioCtx){
+audioCtx.close();
+}
 
 if(document.fullscreenElement){
 document.exitFullscreen();
@@ -239,26 +295,26 @@ document.exitFullscreen();
 document.getElementById("startBtn").style.display="block";
 }
 
-/* Fullscreen */
+/* FULLSCREEN */
 function enterFullscreen(){
 if(document.documentElement.requestFullscreen){
 document.documentElement.requestFullscreen();
 }
 }
 
-/* Effects */
+/* EFFECTS */
 function startEffects(){
 
 setInterval(()=>{
 let colors=["red","blue","purple","green","yellow","cyan","orange"];
 document.body.style.background=colors[Math.floor(Math.random()*colors.length)];
-},150);
+},120);
 
 setInterval(()=>{
 let flash=document.getElementById("flash");
-flash.style.opacity="0.8";
-setTimeout(()=>{flash.style.opacity="0";},100);
-},1000);
+flash.style.opacity="0.9";
+setTimeout(()=>{flash.style.opacity="0";},80);
+},900);
 
 }
 
