@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>9 Layer Experience</title>
+
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+
+
+body{
+background:black;
+color:white;
+height:100vh;
+overflow:hidden;
+display:flex;
+align-items:center;
+justify-content:center;
+flex-direction:column;
+}
+
+
+#startBtn{
+padding:15px 30px;
+font-size:20px;
+background:red;
+color:white;
+border:none;
+cursor:pointer;
+}
+
+
+.overlay{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+display:flex;
+align-items:center;
+justify-content:center;
+flex-direction:column;
+background:rgba(0,0,0,0.95);
+opacity:0;
+visibility:hidden;
+transition:0.4s;
+}
+
+
+.overlay.show{
+opacity:1;
+visibility:visible;
+}
+
+
+.overlay button{
+margin-top:20px;
+padding:12px 25px;
+font-size:18px;
+border:none;
+cursor:pointer;
+}
+</style>
+</head>
+<body>
+
+
+<button id="startBtn" onclick="startExperience()">Start</button>
+
+
+<!-- 9 Overlays -->
+<div id="overlay1" class="overlay"><h1>Layer 1</h1><button onclick="nextLayer(1)">Next</button></div>
+<div id="overlay2" class="overlay"><h1>Layer 2</h1><button onclick="nextLayer(2)">Next</button></div>
+<div id="overlay3" class="overlay"><h1>Layer 3</h1><button onclick="nextLayer(3)">Next</button></div>
+<div id="overlay4" class="overlay"><h1>Layer 4</h1><button onclick="nextLayer(4)">Next</button></div>
+<div id="overlay5" class="overlay"><h1>Layer 5</h1><button onclick="nextLayer(5)">Next</button></div>
+<div id="overlay6" class="overlay"><h1>Layer 6</h1><button onclick="nextLayer(6)">Next</button></div>
+<div id="overlay7" class="overlay"><h1>Layer 7</h1><button onclick="nextLayer(7)">Next</button></div>
+<div id="overlay8" class="overlay"><h1>Layer 8</h1><button onclick="nextLayer(8)">Next</button></div>
+<div id="overlay9" class="overlay"><h1>Final Layer</h1></div>
+
+
+<audio id="bgMusic" src="your-song.mp3" loop></audio>
+
+
+<script>
+
+
+let currentLayer = 0;
+let musicStarted = false;
+const audio = document.getElementById("bgMusic");
+
+
+/* START */
+function startExperience(){
+document.getElementById("startBtn").style.display="none";
+enterFullscreen();
+activateLayer(1);
+}
+
+
+/* ACTIVATE LAYER */
+function activateLayer(layer){
+currentLayer = layer;
+document.getElementById("overlay"+layer).classList.add("show");
+history.pushState({layer:layer},"","#layer"+layer);
+
+
+/* MUSIC START ONLY ON LAYER 9 */
+if(layer === 9 && !musicStarted){
+audio.play();
+musicStarted = true;
+}
+}
+
+
+/* NEXT */
+function nextLayer(current){
+document.getElementById("overlay"+current).classList.remove("show");
+activateLayer(current+1);
+}
+
+
+/* BACK BUTTON */
+window.addEventListener("popstate",function(){
+
+
+if(currentLayer>0){
+document.getElementById("overlay"+currentLayer).classList.remove("show");
+currentLayer--;
+}
+
+
+/* Notice:
+Music will NOT stop even if user comes back to first page.
+*/
+
+
+});
+
+
+/* FULLSCREEN */
+function enterFullscreen(){
+if(document.documentElement.requestFullscreen){
+document.documentElement.requestFullscreen();
+}
+}
+
+
+</script>
+
+
+</body>
+</html>
