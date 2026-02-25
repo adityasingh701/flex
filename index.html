@@ -24,7 +24,6 @@ justify-content:center;
 flex-direction:column;
 }
 
-/* Start Button */
 #startBtn{
 padding:15px 30px;
 font-size:20px;
@@ -35,7 +34,6 @@ cursor:pointer;
 z-index:10;
 }
 
-/* Overlay Base */
 .overlay{
 position:fixed;
 top:0;
@@ -67,36 +65,18 @@ border:none;
 cursor:pointer;
 }
 
-/* Different overlay styles */
-#overlay1{
-background:rgba(0,0,0,0.95);
-}
+#overlay1{ background:rgba(0,0,0,0.95); }
+#overlay2{ background:rgba(30,0,0,0.95); }
+#overlay3{ background:rgba(0,0,40,0.95); }
+#overlay4{ background:rgba(0,0,0,0.95); }
+#overlay5{ background:rgba(30,0,0,0.95); }
+#overlay6{ background:rgba(0,0,40,0.95); }
+  #overlay7{ background:rgba(0,0,0,0.95); }
+#overlay8{ background:rgba(30,0,0,0.95); }
+#overlay9{ background:rgba(0,0,40,0.95); }
+  #overlay10{ background:rgba(0,0,0,0.95); }
 
-#overlay2{
-background:rgba(30,0,0,0.95);
-}
-
-#overlay3{
-background:rgba(0,0,40,0.95);
-}
-  #overlay4{
-background:rgba(0,0,0,0.95);
-  }
-  #overlay5{
-background:rgba(30,0,0,0.95);
-  }
-    #overlay6{
-background:rgba(0,0,40,0.95);
-  }
-    #overlay7{
-background:rgba(0,0,0,0.95);
-  }
-    #overlay8{
-background:rgba(30,0,0,0.95);
-  }
   
-
-/* Flash effect */
 .flash{
 position:fixed;
 top:0;
@@ -109,19 +89,17 @@ pointer-events:none;
 z-index:100;
 }
 
-/* Shake animation */
 @keyframes shake {
-0% { transform: translate(2px, 2px) rotate(0deg); }
-25% { transform: translate(-2px, -3px) rotate(-1deg); }
-50% { transform: translate(3px, 2px) rotate(1deg); }
-75% { transform: translate(-3px, 1px) rotate(0deg); }
-100% { transform: translate(2px, -2px) rotate(1deg); }
+0% { transform: translate(2px, 2px); }
+25% { transform: translate(-2px, -3px); }
+50% { transform: translate(3px, 2px); }
+75% { transform: translate(-3px, 1px); }
+100% { transform: translate(2px, -2px); }
 }
 
 .shake{
 animation:shake 0.2s infinite;
 }
-
 </style>
 </head>
 <body>
@@ -129,44 +107,59 @@ animation:shake 0.2s infinite;
 <button id="startBtn" onclick="startExperience()">Start</button>
 
 <div id="overlay1" class="overlay">
-<h1>DestinCreates</h1>
+<h1>1</h1>
 <button onclick="nextLayer(1)">Next</button>
 </div>
 
 <div id="overlay2" class="overlay">
-<h1>DestinCreates</h1>
+<h1>2</h1>
 <button onclick="nextLayer(2)">Next</button>
 </div>
 
   <div id="overlay3" class="overlay">
-<h1>DestinCreates</h1>
-<button onclick="nextLayer(2)">Next</button>
-  </div>
+<h1>3</h1>
+<button onclick="nextLayer(3)">Next</button>
+</div>
 
   <div id="overlay4" class="overlay">
-<h1>DestinCreates</h1>
-<button onclick="nextLayer(2)">Next</button>
-  </div>
+<h1>4</h1>
+<button onclick="nextLayer(4)">Next</button>
+</div>
 
   <div id="overlay5" class="overlay">
-<h1>DestinCreates</h1>
-<button onclick="nextLayer(2)">Next</button>
-  </div>
+<h1>5</h1>
+<button onclick="nextLayer(5)">Next</button>
+</div>
 
   <div id="overlay6" class="overlay">
-<h1>DestinCreates</h1>
-<button onclick="nextLayer(2)">Next</button>
-  </div>
+<h1>6</h1>
+<button onclick="nextLayer(6)">Next</button>
+</div>
 
   <div id="overlay7" class="overlay">
-<h1>DestinCreates</h1>
-<button onclick="nextLayer(2)">Next</button>
-  </div>
-
-<div id="overlay8" class="overlay">
-<h1>DestinCreates</h1>
-<button onclick="exitAll()">Exit</button>
+<h1>7</h1>
+<button onclick="nextLayer(7)">Next</button>
 </div>
+
+  <div id="overlay8" class="overlay">
+<h1>8</h1>
+<button onclick="nextLayer(8)">Next</button>
+</div>
+
+  <div id="overlay9" class="overlay">
+<h1>9</h1>
+<button onclick="nextLayer(9)"Dont Press </button>
+</div>
+
+  
+<div id="overlay10" class="overlay"
+  <h1>10</h1>
+<button onclick="exitAll()"ㅤ</button>
+</div>
+
+
+
+
 
 <div class="flash" id="flash"></div>
 
@@ -175,7 +168,7 @@ animation:shake 0.2s infinite;
 <script>
 
 let currentLayer = 0;
-let audioStarted = false;
+let musicStarted = false;
 
 /* Start */
 function startExperience(){
@@ -183,11 +176,6 @@ document.getElementById("startBtn").style.display="none";
 enterFullscreen();
 activateLayer(1);
 startEffects();
-
-if(!audioStarted){
-document.getElementById("bgMusic").play();
-audioStarted=true;
-}
 }
 
 /* Activate Layer */
@@ -195,6 +183,13 @@ function activateLayer(layer){
 currentLayer = layer;
 document.getElementById("overlay"+layer).classList.add("show");
 history.pushState({layer:layer},"","#layer"+layer);
+
+/* 🔥 MUSIC START ONLY AT LAST LAYER */
+if(layer === 8 && !musicStarted){
+let audio = document.getElementById("bgMusic");
+audio.play();
+musicStarted = true;
+}
 }
 
 /* Next */
@@ -203,31 +198,39 @@ document.getElementById("overlay"+current).classList.remove("show");
 activateLayer(current+1);
 }
 
-/* Back Button Handling */
+/* Back Handling */
 window.addEventListener("popstate",function(){
+
 if(currentLayer>0){
 document.getElementById("overlay"+currentLayer).classList.remove("show");
+
 document.body.classList.add("shake");
 setTimeout(()=>{document.body.classList.remove("shake");},300);
+
 currentLayer--;
-if(currentLayer===0){
-exitAll();
 }
-}
+
+/* 🔥 NOTICE:
+Music NOT stopped here.
+Even if user returns to first page, it continues playing.
+*/
+
 });
 
-/* Exit All */
+/* Exit Button Only Stops Music */
 function exitAll(){
+
 for(let i=1;i<=8;i++){
 let el=document.getElementById("overlay"+i);
 if(el) el.classList.remove("show");
 }
+
 currentLayer=0;
 
 let audio=document.getElementById("bgMusic");
 audio.pause();
 audio.currentTime=0;
-audioStarted=false;
+musicStarted=false;
 
 if(document.fullscreenElement){
 document.exitFullscreen();
@@ -243,7 +246,7 @@ document.documentElement.requestFullscreen();
 }
 }
 
-/* Flash + Random Color Flicker */
+/* Effects */
 function startEffects(){
 
 setInterval(()=>{
